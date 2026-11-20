@@ -24,7 +24,7 @@ Set `SESSION_SECRET` in `.env.local` to the generated value. Set `API_BASE_URL` 
 npm run dev
 ```
 
-Open http://127.0.0.1:3000 and log in with an existing **Admin** phone number/password. The portal does not seed accounts. For production use `npm run build` then `npm start` behind HTTPS, with a trusted HTTPS API origin. Static export is unsupported.
+Open http://127.0.0.1:3000 and log in with an existing **Admin** email or phone number and password. The portal does not seed accounts. For production use `npm run build` then `npm start` behind HTTPS, with a trusted HTTPS API origin. Static export is unsupported.
 
 ## Connected workflows
 
