@@ -24,7 +24,7 @@ test('admin SSR, session security, filtering, pagination and responsive navigati
       let body = ''; for await (const chunk of req) body += chunk;
       const login = JSON.parse(body);
       if (login.password !== 'fixture-password') { res.writeHead(400).end(JSON.stringify({ isSuccess: false })); return; }
-      res.end(JSON.stringify(envelope({ ...user, roleName: login.phoneNumber === 'donor' ? 'Donor' : 'Admin', accessToken: token, refreshToken: 'fixture-refresh' })));
+      res.end(JSON.stringify(envelope({ ...user, roleName: (login.phoneNumber || login.identifier) === 'donor' ? 'Donor' : 'Admin', accessToken: token, refreshToken: 'fixture-refresh' })));
       return;
     }
     if (req.headers.authorization !== `Bearer ${token}`) { res.writeHead(401).end('{}'); return; }
@@ -81,16 +81,16 @@ test('admin SSR, session security, filtering, pagination and responsive navigati
   page.on('pageerror', err => errors.push(err.message));
   await page.goto(`${origin}/dashboard`);
   await page.waitForURL('**/login');
-  await page.getByLabel('ဖုန်းနံပါတ်', { exact: true }).fill('donor');
+  await page.getByLabel('အီးမေးလ် သို့မဟုတ် ဖုန်းနံပါတ်', { exact: true }).fill('donor');
   await page.getByLabel('စကားဝှက်', { exact: true }).fill('fixture-password');
   await page.getByRole('button', { name: 'အကောင့်ဝင်ရန်', exact: true }).click();
   await page.getByRole('alert').waitFor();
   await page.getByRole('button', { name: 'အကောင့်ဝင်ရန်', exact: true }).waitFor();
   assert.equal((await context.cookies()).filter(x => x.name === 'hsumchaint_admin').length, 0, 'Donor must not get an admin session');
-  await page.getByLabel('ဖုန်းနံပါတ်', { exact: true }).fill('0900000000');
+  await page.getByLabel('အီးမေးလ် သို့မဟုတ် ဖုန်းနံပါတ်', { exact: true }).fill('0900000000');
   await page.getByLabel('စကားဝှက်', { exact: true }).fill('wrong-password');
   await page.getByRole('button', { name: 'အကောင့်ဝင်ရန်', exact: true }).click();
-  await page.getByText('ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက်ကို စစ်ဆေးပါ။', { exact: true }).waitFor();
+  await page.getByText('အီးမေးလ်/ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက်ကို စစ်ဆေးပါ။', { exact: true }).waitFor();
   await page.getByLabel('စကားဝှက်', { exact: true }).fill('fixture-password');
   await page.getByRole('button', { name: 'အကောင့်ဝင်ရန်', exact: true }).click();
   await page.waitForURL('**/dashboard');
@@ -256,6 +256,8 @@ test('admin SSR, session security, filtering, pagination and responsive navigati
   await page.goto(`${origin}/dashboard`);
   await page.getByRole('button', { name: 'မီနူး ဖွင့်ရန်' }).click();
   await page.getByRole('button', { name: 'အကောင့်ထွက်ရန်' }).click();
+  const confirmSignout = page.getByRole('button', { name: 'ထွက်မည်' });
+  if (await confirmSignout.isVisible({ timeout: 2000 }).catch(() => false)) await confirmSignout.click();
   await page.waitForURL('**/login');
   assert.equal((await context.cookies()).filter(x => x.name === 'hsumchaint_admin').length, 0);
   await context.addCookies([{ name: session.name, value: `${session.value.slice(0, -5)}XXXXX`, url: origin }]);

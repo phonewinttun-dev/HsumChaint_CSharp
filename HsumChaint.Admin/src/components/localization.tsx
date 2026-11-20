@@ -30,7 +30,7 @@ const translations: Record<string, string> = {
   'ဆုံးဖြတ်ချက်': 'Decision', 'လက်ခံရန်': 'Accept', 'ငြင်းပယ်ရန်': 'Reject', 'စိစစ်မှတ်ချက်': 'Review Note',
   'မူကြမ်း': 'Draft', 'တင်သွင်းပြီး': 'Submitted', 'လက်ခံပြီး': 'Accepted', 'အချိန်သတ်မှတ်ပြီး': 'Scheduled', 'ငြင်းပယ်ပြီး': 'Rejected', 'ပယ်ဖျက်ပြီး': 'Cancelled',
   'ငွေ': 'Money', 'ဆွမ်း / အစားအစာ': 'Alms / Food', 'ဆေးဝါး': 'Medicine', 'သင်္ကန်း': 'Robes', 'အသုံးအဆောင်': 'Supplies', 'အခြား': 'Other',
-  'အမည်': 'Name', 'ဖုန်းနံပါတ်': 'Phone Number', 'အီးမေးလ်': 'Email', 'ဆက်သွယ်ရန်ဖုန်း': 'Contact Phone', 'စကားဝှက်': 'Password',
+  'အမည်': 'Name', 'အီးမေးလ် သို့မဟုတ် ဖုန်းနံပါတ်': 'Email or Phone Number', 'ဖုန်းနံပါတ်': 'Phone Number', 'အီးမေးလ်': 'Email', 'ဆက်သွယ်ရန်ဖုန်း': 'Contact Phone', 'စကားဝှက်': 'Password',
   'လိပ်စာ': 'Address', 'ဖော်ပြချက်': 'Description', 'ရက်စွဲ': 'Date', 'အခန်းကဏ္ဍ': 'Role', 'ခွင့်ပြုချက်': 'Permission',
   'စုစုပေါင်း': 'Total', 'ခု': 'records', 'စာမျက်နှာ': 'Page', 'ယခင်စာမျက်နှာ': 'Previous page', 'နောက်စာမျက်နှာ': 'Next page', 'စာမျက်နှာများ': 'Pages',
   'မှတ်တမ်း မတွေ့ရှိပါ': 'No records found', 'စစ်ထုတ်ထားသည့် အခြေအနေများကို ပြောင်းပြီး ထပ်မံရှာဖွေပါ။': 'Change the filters and try again.',

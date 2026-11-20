@@ -22,7 +22,7 @@ export async function api<T>(path: string, token?: string, body?: unknown, metho
     const login = path.toLowerCase().includes('/auth/login');
     const message = result?.message;
     const safe = typeof message === 'string' && message.length < 400 && !/exception|application layer|sql|connection|stack|innerexception/i.test(message);
-    throw new ApiError(response.ok ? 400 : response.status, login ? 'ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက်ကို စစ်ဆေးပါ။' : response.status < 500 && safe ? message : 'လုပ်ဆောင်မှု မအောင်မြင်ပါ။ ပြန်လည်ကြိုးစားပါ။');
+    throw new ApiError(response.ok ? 400 : response.status, login ? 'အီးမေးလ်/ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက်ကို စစ်ဆေးပါ။' : response.status < 500 && safe ? message : 'လုပ်ဆောင်မှု မအောင်မြင်ပါ။ ပြန်လည်ကြိုးစားပါ။');
   }
   return result;
 }
