@@ -303,7 +303,7 @@ namespace HsumChaint.Domain.Features.Auth.Services
             try
             {
                 var legacyPhoneNumberProvided = reqModel.Identifier is null && reqModel.PhoneNumber is not null;
-                var identifier = reqModel.Identifier ?? reqModel.PhoneNumber;
+                var identifier = reqModel.Identifier ?? reqModel.PhoneNumber ?? reqModel.Email;
 
                 if (!identifier.TryNormalizeRequiredString(out var normalizedIdentifier)
                     || !reqModel.Password.TryNormalizeRequiredString(out _))

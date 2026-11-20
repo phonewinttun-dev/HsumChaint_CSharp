@@ -5,5 +5,6 @@ namespace HsumChaint.Domain.Features.Auth.DTOs
         public string? Identifier { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Password { get; set; }
+        public string? Email { get; set; }
     }
 }
