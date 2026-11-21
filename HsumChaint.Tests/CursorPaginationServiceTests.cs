@@ -315,4 +315,59 @@ public class CursorPaginationServiceTests
         Assert.False(second.Pagination.HasNextPage);
         Assert.Null(second.Pagination.NextCursor);
     }
+
+    [Fact]
+    public async Task MembersFeed_ReturnsAuthorizedMembersWithCursor()
+    {
+        // Arrange
+        await using var db = Context();
+        db.MonasterySpaces.Add(new MonasterySpace { Id = 10, MonasteryName = "Space 10", IsDeleted = false });
+        for (var id = 1; id <= 5; id++)
+        {
+            db.Users.Add(new User
+            {
+                Id = 100 + id,
+                Name = $"Member {id}",
+                PhoneNumber = $"091000000{id}",
+                Password = "hashed-password",
+                RoleId = SystemRoles.UserId,
+                IsDeleted = false
+            });
+            db.MonasteryMembers.Add(new MonasteryMember
+            {
+                Id = id,
+                UserId = 100 + id,
+                MonasterySpaceId = 10,
+                SpaceRoleId = id == 1 ? SpaceRoles.OwnerId : SpaceRoles.ViewerId,
+                IsOwner = id == 1
+            });
+        }
+        await db.SaveChangesAsync();
+
+        var service = new MonasteryService(db);
+
+        // Act
+        var first = await service.GetMembersFeed(101, 10, new CursorPaginationRequest { LastId = null, PageSize = 2 });
+        var second = await service.GetMembersFeed(101, 10, new CursorPaginationRequest { LastId = first.Pagination.NextCursor, PageSize = 2 });
+        var third = await service.GetMembersFeed(101, 10, new CursorPaginationRequest { LastId = second.Pagination.NextCursor, PageSize = 2 });
+        var unauthorized = await service.GetMembersFeed(999, 10, new CursorPaginationRequest { LastId = null, PageSize = 2 });
+
+        // Assert
+        Assert.True(first.IsSuccess);
+        Assert.Equal(new[] { 1, 2 }, first.Data.Select(x => x.Id));
+        Assert.True(first.Pagination.HasNextPage);
+        Assert.Equal(2, first.Pagination.NextCursor);
+
+        Assert.True(second.IsSuccess);
+        Assert.Equal(new[] { 3, 4 }, second.Data.Select(x => x.Id));
+        Assert.True(second.Pagination.HasNextPage);
+        Assert.Equal(4, second.Pagination.NextCursor);
+
+        Assert.True(third.IsSuccess);
+        Assert.Equal(new[] { 5 }, third.Data.Select(x => x.Id));
+        Assert.False(third.Pagination.HasNextPage);
+        Assert.Null(third.Pagination.NextCursor);
+
+        Assert.False(unauthorized.IsSuccess);
+    }
 }

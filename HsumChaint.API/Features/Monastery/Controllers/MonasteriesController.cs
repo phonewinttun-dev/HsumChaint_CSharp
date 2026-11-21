@@ -177,6 +177,23 @@ namespace HsumChaint.API.Features.Monastery.Controllers
             return response.ToActionResult();
         }
 
+        /// <summary>
+        /// Retrieves a cursor-paginated feed of members for a monastery space.
+        /// </summary>
+        [HttpGet("{id}/members/feed")]
+        [HasPermission(SpacePermissions.SpaceViewMembers)]
+        public async Task<IActionResult> GetMembersFeed(int id, [FromQuery] CursorPaginationRequest pagination)
+        {
+            var currentUserId = User.GetCurrentUserId();
+            if (!currentUserId.HasValue)
+            {
+                return Unauthorized();
+            }
+
+            var response = await _monasteryService.GetMembersFeed(currentUserId.Value, id, pagination ?? new CursorPaginationRequest());
+            return response.ToActionResult();
+        }
+
         [HttpPut("{id}/members/{memberUserId}/role")]
         [HasPermission(SpacePermissions.SpaceUpdateMemberRole)]
         public async Task<IActionResult> UpdateMemberRole(int id, int memberUserId, UpdateMemberRoleRequestDto request)

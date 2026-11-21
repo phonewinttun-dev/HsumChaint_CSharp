@@ -19,6 +19,10 @@ namespace HsumChaint.Domain.Features.Monastery.ServiceInterfaces
         Task<Result<InvitationResponseDto>> InviteMember(int currentUserId, int monasterySpaceId, InviteMemberRequestDto request);
         Task<Result<InvitationResponseDto>> RespondToInvitation(int currentUserId, int invitationId, RespondInvitationRequestDto request);
         Task<PagedResult<MonasteryMemberDto>> GetMembers(int currentUserId, int monasterySpaceId, PaginationRequest? pagination = null);
+        /// <summary>
+        /// Retrieves a cursor-paginated feed of members belonging to a monastery space.
+        /// </summary>
+        Task<CursorPagedResult<MonasteryMemberDto>> GetMembersFeed(int currentUserId, int monasterySpaceId, CursorPaginationRequest request);
         Task<Result<MonasteryMemberDto>> UpdateMemberRole(int currentUserId, int monasterySpaceId, int memberUserId, UpdateMemberRoleRequestDto request);
         Task<Result<MonasteryMemberDto>> RemoveMember(int currentUserId, int monasterySpaceId, int memberUserId);
         Task<Result<List<SpacePermissionDto>>> GetSpacePermissions(int currentUserId, int monasterySpaceId);

@@ -495,6 +495,55 @@ namespace HsumChaint.Domain.Features.Monastery.Services
             return PagedResult<MonasteryMemberDto>.Success(members, new Pagination(pageNumber, pageSize, totalCount), "Members retrieved successfully.");
         }
 
+        /// <summary>
+        /// Retrieves a cursor-paginated feed of members belonging to a monastery space.
+        /// </summary>
+        public async Task<CursorPagedResult<MonasteryMemberDto>> GetMembersFeed(int currentUserId, int monasterySpaceId, CursorPaginationRequest request)
+        {
+            var pageSize = request.PageSize.IsPositive() ? request.PageSize : 15;
+
+            var member = await GetMember(currentUserId, monasterySpaceId);
+            if (!await HasPermissionTo(currentUserId, member, SpacePermissions.SpaceViewMembers))
+            {
+                return CursorPagedResult<MonasteryMemberDto>.Failure("User is not authorized to view members of this monastery.");
+            }
+
+            var query = from membership in _dbContext.MonasteryMembers.AsNoTracking()
+                        join user in _dbContext.Users.AsNoTracking() on membership.UserId equals user.Id
+                        where membership.MonasterySpaceId == monasterySpaceId
+                        select new MonasteryMemberDto
+                        {
+                            Id = membership.Id,
+                            UserId = user.Id,
+                            UserName = user.Name,
+                            PhoneNumber = user.PhoneNumber,
+                            MonasterySpaceId = membership.MonasterySpaceId ?? 0,
+                            SpaceRoleId = membership.SpaceRoleId,
+                            SpaceRoleName = membership.SpaceRole != null ? membership.SpaceRole.Name : null,
+                            IsOwner = membership.IsOwner == true
+                        };
+
+            if (request.LastId.HasValue && request.LastId.Value > 0)
+            {
+                query = query.Where(x => x.Id > request.LastId.Value);
+            }
+
+            var items = await query.OrderBy(x => x.Id)
+                .Take(pageSize + 1)
+                .ToListAsync();
+
+            var hasNextPage = items.Count > pageSize;
+            if (hasNextPage)
+            {
+                items.RemoveAt(pageSize);
+            }
+
+            var nextCursor = hasNextPage ? items.Last().Id : (int?)null;
+            var pagination = new CursorPagination(nextCursor, hasNextPage, pageSize);
+
+            return CursorPagedResult<MonasteryMemberDto>.Success(items, pagination, "Members feed retrieved successfully.");
+        }
+
         public async Task<Result<MonasteryMemberDto>> UpdateMemberRole(int currentUserId, int monasterySpaceId, int memberUserId, UpdateMemberRoleRequestDto request)
         {
             var actor = await GetMember(currentUserId, monasterySpaceId);
